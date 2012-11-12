@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Node Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Categorized notes application">
+    <meta name="author" content="Dan Lash">
+
+    <link href="stylesheets/bootstrap.css" rel="stylesheet">
+    <style>
+      body { padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */ }
+    </style>
+    <link href="stylesheets/bootstrap.theme.css" rel="stylesheet">
+    <link href="stylesheets/style.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="shortcut icon" href="images/favicon.ico">
+  </head>
+
+  <body id="node_notes">
+
+    <div class="navbar navbar navbar-fixed-top">
+      <div class="navbar-inner">
+
+    
+          <a class="offset1 brand" href="#">Node Notes</a>
+          <div class="nav-collapse collapse">
+            <div id="add" class="dropdown">
+              <a href="#" class="btn btn-info">Add</a><a href="#" class="btn btn-info dropdown-toggle" data-toggle="dropdown" >
+                <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="#">New Category</a></li>
+                <li class="divider"></li>
+                <li><a href="#">Retrospective Topics</a></li>
+                <li><a href="#">Team Outing Ideas</a></li>
+              </ul>
+            </div>
+            <a href="#" class="btn btn-info " data-toggle="button">
+              <b class="icon-white icon-check"></b>
+              Show Closed
+            </a>
+
+          </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="row-fluid">
+        <h1 class="offset1">Vacation Days</h1>
+      </div>
+
+      <div class="row-fluid">
+        <form id="add-form" class="offset1 span10 form-horizontal well">
+          <div class="control-group">
+            <input type="text" class="input-xlarge span5" id="note-body">
+          </div>
+
+          <div class="form-actions">
+              <button type="submit" class="btn btn-inverse"><i class="icon-plus icon-white"></i>Add Note</button>
+              <button type="reset" class="btn btn-small ">Cancel</button>
+            </div>
+        </form>
+      </div>
+
+      <div class="row-fluid">
+        <ul id="notes" class="offset1 span10 well">
+          <li class="note closed">
+            <form>
+              <button class="btn btn-inverse btn-mini">
+                <b class="icon-white icon-check"></b>
+              </button>
+            </form>
+            <div class="body">
+              10/24 - 10/25 ~ Matt Higgins
+            </div>
+          </li>
+          <li class="note">
+            <form>
+              <button class="btn btn-primary btn-mini">
+                <b class="icon-white icon-ok"></b>
+              </button>
+            </form>
+            <div class="body">
+              2012-11-11 ~ Dan Lash
+            </div>
+          </li>
+          <li class="note">
+            <form>
+              <button class="btn btn-primary btn-mini">
+                <b class="icon-white icon-ok"></b>
+              </button>
+            </form>
+            Maecenas eu mi eu nisi accumsan sagittis a in augue. Duis ut orci erat, auctor rhoncus turpis. Aliquam tortor libero, eleifend eu molestie et, porttitor eu ligula. Curabitur blandit rutrum risus, quis pretium libero posuere sed. Integer adipiscing dignissim eros, id tristique leo sollicitudin auctor. Praesent in ipsum diam, sit amet iaculis lectus. Ut in diam mi. Pellentesque imperdiet suscipit odio et ultrices. Aenean blandit tellus vel orci semper euismod adipiscing augue hendrerit.
+          </li>
+          <li class="note">
+            <form>
+              <button class="btn btn-primary btn-mini">
+                <b class="icon-white icon-ok"></b>
+              </button>
+            </form>
+            <div class="body">
+              2012-11-11 ~ Dan Lash
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div> 
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="javascripts/bootstrap.js"></script>
+    <script src="javascripts/underscore.js"></script>
+    <script src="javascripts/backbone.js"></script>
+    <script src="javascripts/plugin.js"></script>
+    <script>
+      $(function(){
+        var app = new NodeNodes.App();
+        app.start();
+      })
+    </script>
+
+  </body>
+</html>

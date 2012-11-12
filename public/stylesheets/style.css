@@ -1,0 +1,68 @@
+#node_notes .container {
+	width: auto;
+}
+
+#node_notes .brand {
+	margin-left: 5%;
+}
+
+#node_notes .well {
+	padding: 10px;
+}
+
+#add {
+	display: inline-block;
+}
+
+#add-form .control-group {
+	margin: 0;
+}
+
+#add-form .form-actions {
+	padding: 0;
+	padding-top: 5px;
+	margin: 0;
+}
+
+#add-form #note-body {
+	width: 100%;
+	margin-right: 10px;
+}
+
+#add-form [type=submit] {
+	float: right;
+}
+
+#add-form [type=reset] {
+	float: left;
+	margin-left: 0;
+}
+
+#notes {
+	list-style: none;
+}
+
+#notes .note {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-bottom: 5px;
+	line-height: 30px;
+}
+
+#notes .note form {
+	margin: 0;
+	display: inline-block;
+	margin-right: 10px;
+}
+
+#notes .note form button, #notes .note form button > * {
+	margin: 0;
+}
+
+#notes .note .body {
+	display: inline-block;
+}
+
+#notes .note.closed .body {
+	color: #27666D;
+}
