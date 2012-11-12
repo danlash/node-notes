@@ -59,6 +59,18 @@
 	margin: 0;
 }
 
+#notes .note .open-note {
+	display: none;
+}
+
 #notes .note.closed {
 	color: #27666D;
+}
+
+#notes .note.closed .close-note {
+	display: none;
+}
+
+#notes .note.closed .open-note {
+	display: inline-block;
 }
