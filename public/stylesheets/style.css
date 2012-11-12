@@ -59,10 +59,6 @@
 	margin: 0;
 }
 
-#notes .note .body {
-	display: inline-block;
-}
-
-#notes .note.closed .body {
+#notes .note.closed {
 	color: #27666D;
 }
