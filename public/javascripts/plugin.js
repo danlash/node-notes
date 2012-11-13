@@ -8,27 +8,25 @@ var NodeNodes = (function(){
 			var nav = new Navigation();
 			var navView = new NavigationView({ model : nav, el : $('#navigation') }).render();
 
-			var list = new List({ id: 2, name : 'Vacation Days' });
-			var listView = new ListView({ model : list, el : $('#list'), navigation : nav });
-
-			var setupAutoSave = function () {
-				list.on('change', function(){
-					Backbone.sync('update', list);
-				});	
-			};
-
-			list.fetch({ success: setupAutoSave });
-
-			this.list=list;
+			var listView = new ListView({ el : $('#list'), navigation : nav });
 		}
 	});
 
 	var Navigation = Backbone.Model.extend({
 		defaults: {
 			'showClosed' : false,
-			'adding' : false
+			'adding' : false,
+			'lists' : [],
+			'currentList' : null
 		},
 		initialize: function(){
+			_.bindAll(this);
+			$.ajax({ url: 'list', success: this.setupLists });
+		},
+		setupLists: function(json) {
+			var lists = JSON.parse(json);
+			this.set('lists', lists);
+			if (lists.length > 0) { this.changeList(lists[0].id); }
 		},
 		toggleShowClosed: function() {
 			this.set('showClosed', ! this.get('showClosed'));
@@ -38,6 +36,9 @@ var NodeNodes = (function(){
 		},
 		stopAdding: function() {
 			this.set('adding', false);
+		},
+		changeList: function(listId) {
+			this.set('currentList', listId);
 		}
 	});
 
@@ -82,10 +83,10 @@ var NodeNodes = (function(){
 		},
 		initialize: function () {
 			_.bindAll(this);
-			this.model.on('change', this.render);
 			this.navigation = this.options.navigation;
 			this.navigation.on('change:showClosed', this.render);
 			this.navigation.on('change:adding', this.render);
+			this.navigation.on('change:currentList', this.changeModel);
 		},
 		render: function() {
 			var notesView = new NotesView({ collection : this.model.get('notes'), el : $('#notes') });
@@ -107,6 +108,19 @@ var NodeNodes = (function(){
 			this.navigation.stopAdding();
 			this.model.addNote($('#note-body').val());
 			$('#note-body').val('');
+		},
+		changeModel: function(){
+			var list = new List({ id: this.navigation.get('currentList') });
+			this.model = list;
+			this.model.on('change', this.render);
+
+			var setupAutoSave = function () {
+				list.on('change', function(){
+					Backbone.sync('update', list);
+				});	
+			};
+
+			this.model.fetch({ success: setupAutoSave });
 		}
 	});
 
@@ -172,7 +186,8 @@ var NodeNodes = (function(){
 	var NavigationView = Backbone.View.extend({
 		events: {
 			'click #show-closed' : 'toggleShowClosed',
-			'click #add' : 'addNote'
+			'click #add' : 'addNote',
+			'click .change-list' : 'changeList'
 		},
 		initialize: function(){
 			_.bindAll(this);
@@ -185,6 +200,16 @@ var NodeNodes = (function(){
 				$button.addClass('active'); 
 			}
 
+			var menu = '<li><a href="#">New Category</a></li>';
+            menu += '<li class="divider"></li>';
+
+            for (var i = this.model.get('lists').length - 1; i >= 0; i--) {
+            	var list = this.model.get('lists')[i];
+            	menu += '<li><a href="#" class="change-list" data-id="'+list.id+'">'+list.name+'</a></li>';
+            }
+
+			this.$el.find('.dropdown-menu').empty().append(menu);
+
 			return this;
 		},
 		toggleShowClosed: function(){
@@ -192,6 +217,10 @@ var NodeNodes = (function(){
 		},
 		addNote: function(){
 			this.model.startAdding();
+		},
+		changeList: function(e){
+			var listId = $(e.currentTarget).data().id;
+			this.model.changeList(listId);
 		}
 	});
 

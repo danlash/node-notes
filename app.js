@@ -30,6 +30,8 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 app.get('/notes/:listId', note.list);
+
+app.get('/list', list.index);
 app.get('/list/:listId', list.detail);
 app.put('/list/:listId', list.save);
 
