@@ -10,6 +10,10 @@
 	padding: 10px;
 }
 
+#node-notes .modal-backdrop {
+	z-index: 1020;
+}
+
 #navigation > .dropdown {
 	display: inline-block;
 }
@@ -86,4 +90,46 @@
 
 #notes .note.closed .open-note {
 	display: inline-block;
+}
+
+#new-list {
+	left: 50px;
+	right: 50px;
+	width: auto;
+	margin-left: 0;
+}
+
+#new-list .modal-body {
+	padding: 0;
+	height: 110px;
+}
+
+#new-list form {
+	margin-bottom: 0px;
+}
+
+#new-list input[name=name] {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	right: 10px;
+	height: 25px;
+	width: auto;
+
+	font-size: 16px;
+}
+
+#new-list .add {
+	padding: 10px;
+	font-size: 14px;
+
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+}
+
+#new-list .cancel {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
 }

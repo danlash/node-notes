@@ -33,6 +33,7 @@ app.get('/notes/:listId', note.list);
 
 app.get('/list', list.index);
 app.get('/list/:listId', list.detail);
+app.post('/list', list.add);
 app.put('/list/:listId', list.save);
 
 http.createServer(app).listen(app.get('port'), function(){

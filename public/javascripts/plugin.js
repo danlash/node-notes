@@ -21,12 +21,15 @@ var NodeNodes = (function(){
 		},
 		initialize: function(){
 			_.bindAll(this);
+			this.reloadLists();
+		},
+		reloadLists: function() {
 			$.ajax({ url: 'list', success: this.setupLists });
 		},
 		setupLists: function(json) {
 			var lists = JSON.parse(json);
 			this.set('lists', lists);
-			if (lists.length > 0) { this.changeList(lists[0].id); }
+			if (lists.length > 0) { this.changeList(lists[lists.length-1].id); }
 		},
 		toggleShowClosed: function() {
 			this.set('showClosed', ! this.get('showClosed'));
@@ -39,6 +42,10 @@ var NodeNodes = (function(){
 		},
 		changeList: function(listId) {
 			this.set('currentList', listId);
+		},
+		addList: function(name) {
+			var nav = this;
+			$.post('list', { name : name }, function(){ nav.reloadLists(); });
 		}
 	});
 
@@ -187,7 +194,9 @@ var NodeNodes = (function(){
 		events: {
 			'click #show-closed' : 'toggleShowClosed',
 			'click #add' : 'addNote',
-			'click .change-list' : 'changeList'
+			'click .change-list' : 'changeList',
+			'click #new-list .add' : 'addList',
+			'click #new-list .cancel' : 'cancelList'
 		},
 		initialize: function(){
 			_.bindAll(this);
@@ -200,7 +209,7 @@ var NodeNodes = (function(){
 				$button.addClass('active'); 
 			}
 
-			var menu = '<li><a href="#">New Category</a></li>';
+			var menu = '<li><a href="#new-list" role="button" data-toggle="modal">New List</a></li>';
             menu += '<li class="divider"></li>';
 
             for (var i = this.model.get('lists').length - 1; i >= 0; i--) {
@@ -221,6 +230,16 @@ var NodeNodes = (function(){
 		changeList: function(e){
 			var listId = $(e.currentTarget).data().id;
 			this.model.changeList(listId);
+		},
+		addList: function(){
+			var $listName = $('#list-name');
+			this.model.addList($listName.val());
+			$listName.val('');
+
+			$('#new-list').data().modal.hide();
+		},
+		cancelList: function(){
+			$('#new-list').data().modal.hide();
 		}
 	});
 
