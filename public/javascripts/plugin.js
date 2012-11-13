@@ -24,11 +24,20 @@ var NodeNodes = (function(){
 	});
 
 	var Navigation = Backbone.Model.extend({
+		defaults: {
+			'showClosed' : false,
+			'adding' : false
+		},
 		initialize: function(){
-			this.set('showClosed', false)
 		},
 		toggleShowClosed: function() {
 			this.set('showClosed', ! this.get('showClosed'));
+		},
+		startAdding: function(){
+			this.set('adding', true);
+		},
+		stopAdding: function() {
+			this.set('adding', false);
 		}
 	});
 
@@ -76,6 +85,7 @@ var NodeNodes = (function(){
 			this.model.on('change', this.render);
 			this.navigation = this.options.navigation;
 			this.navigation.on('change:showClosed', this.render);
+			this.navigation.on('change:adding', this.render);
 		},
 		render: function() {
 			var notesView = new NotesView({ collection : this.model.get('notes'), el : $('#notes') });
@@ -83,13 +93,14 @@ var NodeNodes = (function(){
 
 			this.$el.find('#name').html(this.model.get('name'));
 
-			this.$el.removeClass('show-closed');
+			this.$el.removeClass('show-closed adding');
 			if (this.navigation.get('showClosed')) { this.$el.addClass('show-closed'); }
+			if (this.navigation.get('adding')) { this.$el.addClass('adding'); }
 
 			return this;
 		},
 		cancel: function(){
-			this.$el.removeClass('adding');
+			this.navigation.stopAdding();
 			this.render();
 		},
 		add: function(e) {
@@ -159,7 +170,8 @@ var NodeNodes = (function(){
 
 	var NavigationView = Backbone.View.extend({
 		events: {
-			'click #show-closed' : 'toggleShowClosed'
+			'click #show-closed' : 'toggleShowClosed',
+			'click #add' : 'addNote'
 		},
 		initialize: function(){
 			_.bindAll(this);
@@ -176,6 +188,9 @@ var NodeNodes = (function(){
 		},
 		toggleShowClosed: function(){
 			this.model.toggleShowClosed();
+		},
+		addNote: function(){
+			this.model.startAdding();
 		}
 	});
 
