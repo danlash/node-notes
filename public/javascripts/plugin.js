@@ -103,7 +103,10 @@ var NodeNodes = (function(){
 
 			this.$el.removeClass('show-closed adding');
 			if (this.navigation.get('showClosed')) { this.$el.addClass('show-closed'); }
-			if (this.navigation.get('adding')) { this.$el.addClass('adding'); }
+			if (this.navigation.get('adding')) { 
+				this.$el.addClass('adding'); 
+				this.$el.find('input').focus();
+			}
 
 			return this;
 		},
