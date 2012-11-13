@@ -14,26 +14,34 @@
 	display: inline-block;
 }
 
-#add-form .control-group {
+#new-note {
+	display: none;
+}
+
+#list.adding #new-note {
+	display: block;
+}
+
+#new-note .control-group {
 	margin: 0;
 }
 
-#add-form .form-actions {
+#new-note .form-actions {
 	padding: 0;
 	padding-top: 10px;
 	margin: 0;
 }
 
-#add-form #note-body {
+#new-note #note-body {
 	width: 100%;
 	margin-right: 10px;
 }
 
-#add-form [type=submit] {
+#new-note .add {
 	float: right;
 }
 
-#add-form [type=reset] {
+#new-note .cancel {
 	float: left;
 	margin-left: 0;
 }

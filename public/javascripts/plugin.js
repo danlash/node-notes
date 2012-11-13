@@ -45,14 +45,21 @@ var NodeNodes = (function(){
 		parse: function(json) {
 			json.notes = new Notes( json.notes );
 			var _list = this;
-			json.notes.on('change', function() {
+			json.notes.on('change add', function() {
 				_list.trigger('change');
 			});
 			return json;
+		},
+		addNote: function(body) {
+			this.get('notes').add({ body: body });
 		}
 	});
 
 	var ListView = Backbone.View.extend({
+		events: {
+			'click #new-note .cancel' : 'cancel',
+			'click #new-note .add' : 'add'
+		},
 		initialize: function () {
 			_.bindAll(this);
 			this.model.on('change', this.render);
@@ -61,7 +68,17 @@ var NodeNodes = (function(){
 			var notesView = new NotesView({ collection : this.model.get('notes'), el : $('#notes') });
 			notesView.render();
 
+			this.$el.find('#name').html(this.model.get('name'));
+
 			return this;
+		},
+		cancel: function(){
+			this.$el.removeClass('adding');
+			this.render();
+		},
+		add: function(e) {
+			this.$el.removeClass('adding');
+			this.model.addNote($('#note-body').val());
 		}
 	});
 
