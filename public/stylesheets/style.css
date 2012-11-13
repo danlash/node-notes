@@ -1,12 +1,12 @@
-#node_notes .container {
+#node-notes .container {
 	width: auto;
 }
 
-#node_notes .brand {
+#node-notes .brand {
 	margin-left: 5%;
 }
 
-#node_notes .well {
+#node-notes .well {
 	padding: 10px;
 }
 
@@ -73,6 +73,11 @@
 
 #notes .note.closed {
 	color: #27666D;
+	display: none;
+}
+
+#list.show-closed .note.closed {
+	display: block;
 }
 
 #notes .note.closed .close-note {

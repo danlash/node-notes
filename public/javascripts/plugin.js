@@ -4,8 +4,12 @@ var NodeNodes = (function(){
 
 	exports.App = Backbone.Model.extend({
 		start: function() {
+
+			var nav = new Navigation();
+			var navView = new NavigationView({ model : nav, el : $('#navigation') }).render();
+
 			var list = new List({ id: 2, name : 'Vacation Days' });
-			var listView = new ListView({ model : list, el : $('#list') });
+			var listView = new ListView({ model : list, el : $('#list'), navigation : nav });
 
 			var setupAutoSave = function () {
 				list.on('change', function(){
@@ -15,11 +19,18 @@ var NodeNodes = (function(){
 
 			list.fetch({ success: setupAutoSave });
 
-
 			this.list=list;
 		}
 	});
 
+	var Navigation = Backbone.Model.extend({
+		initialize: function(){
+			this.set('showClosed', false)
+		},
+		toggleShowClosed: function() {
+			this.set('showClosed', ! this.get('showClosed'));
+		}
+	});
 
 	var Note = Backbone.Model.extend({
 		defaults: {
@@ -63,12 +74,17 @@ var NodeNodes = (function(){
 		initialize: function () {
 			_.bindAll(this);
 			this.model.on('change', this.render);
+			this.navigation = this.options.navigation;
+			this.navigation.on('change:showClosed', this.render);
 		},
 		render: function() {
 			var notesView = new NotesView({ collection : this.model.get('notes'), el : $('#notes') });
 			notesView.render();
 
 			this.$el.find('#name').html(this.model.get('name'));
+
+			this.$el.removeClass('show-closed');
+			if (this.navigation.get('showClosed')) { this.$el.addClass('show-closed'); }
 
 			return this;
 		},
@@ -140,6 +156,29 @@ var NodeNodes = (function(){
 			this.model.open();
 		}
 	});
+
+	var NavigationView = Backbone.View.extend({
+		events: {
+			'click #show-closed' : 'toggleShowClosed'
+		},
+		initialize: function(){
+			_.bindAll(this);
+			this.model.on('change', this.render);
+		},
+		render: function(){
+			var $button = this.$el.find('#show-closed');
+			$button.removeClass('active')
+			if (this.model.get('showClosed')) { 
+				$button.addClass('active'); 
+			}
+
+			return this;
+		},
+		toggleShowClosed: function(){
+			this.model.toggleShowClosed();
+		}
+	});
+
 
 	return exports;
 
