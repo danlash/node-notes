@@ -104,8 +104,9 @@ var NodeNodes = (function(){
 			this.render();
 		},
 		add: function(e) {
-			this.$el.removeClass('adding');
+			this.navigation.stopAdding();
 			this.model.addNote($('#note-body').val());
+			$('#note-body').val('');
 		}
 	});
 
