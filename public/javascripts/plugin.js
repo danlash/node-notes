@@ -26,8 +26,7 @@ var NodeNodes = (function(){
 		reloadLists: function() {
 			$.ajax({ url: 'list', success: this.setupLists });
 		},
-		setupLists: function(json) {
-			var lists = JSON.parse(json);
+		setupLists: function(lists) {
 			this.set('lists', lists);
 			if (lists.length > 0) { this.changeList(lists[lists.length-1].id); }
 		},

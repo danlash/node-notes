@@ -20,10 +20,11 @@ exports.index = function(req, res) {
 };
 
 exports.detail = function(req, res) {
-	var listId = req.params.listId;
-	//load from db
-
-	res.send(details[listId]);
+	var listId = parseInt(req.params.listId);
+	db.one('list', { id : listId }, ['id', 'name', 'notes'], function(err, data) {
+		console.log(data);
+		res.send(data);
+	});
 };
 
 exports.save = function(req, res) {

@@ -68,9 +68,23 @@ exports.all = function(collectionName, projectionProperties, allCallback) {
   var query = {};
   var projection = {};
   for (var i = projectionProperties.length - 1; i >= 0; i--) {
-    projection[projectionProperties[i]] = projectionProperties[i];
+    projection[projectionProperties[i]] = true;
   };
   var connectionOpened = queryOnConnectionOpened(collectionName, query, projection, allCallback);
+
+  db.open(connectionOpened);
+};
+
+exports.one = function(collectionName, query, projectionProperties, oneCallback) {
+  var db = getDb();
+  var projection = {};
+  for (var i = projectionProperties.length - 1; i >= 0; i--) {
+    projection[projectionProperties[i]] = true;
+  };
+  var connectionOpened = queryOnConnectionOpened(collectionName, query, projection, function(err, data){
+    if (data.length === 0) { oneCallback(err, null); return }
+    oneCallback(err, data[0]);
+  });
 
   db.open(connectionOpened);
 };
