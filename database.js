@@ -7,20 +7,27 @@ var databaseName = dev ? 'NodeNotes' : 'app9222257';
 var user = 'admin';
 var password = 'admin';
 
-var getDb = function (gotDb) {
+var getDb = function (openCallback) {
   var server = new mongodb.Server(serverHost, serverPort, {});
   var db = new mongodb.Db(databaseName, server, { safe : true });
-  if (dev) {
-    db.authenticate(user, password, function (err, result) {
-      gotDb(result);
+  if (!dev) {
+    db.open(function(err, result){
+      console.log('db opened', err)
+      db.authenticate(user, password, function (err, result) {
+
+        console.log('db authenticated', err, result)
+        openCallback(null, db);
+      });
     });
-  } else gotDb(db);
+  } else {
+    db.open(connectionOpened);
+  }
 };
 
 var counter = function (db, name, callback) {
   db.collection('counters', function(err, collection){
     collection.findAndModify({_id:name}, [], {$inc : {next:1}}, {"new":true, upsert:true }, function(err, data){
-      console.log(data)
+      console.log('count', data)
       callback(data.next);
     });
   });
@@ -34,7 +41,7 @@ var insertOnConnectionOpened = function(collectionName, model, insertCallback){
     counter(db, collectionName, function(id){
       model.id = id;
 
-      console.log('Inserting', model);
+      console.log('inserting', model);
       db.collection(collectionName, function(err, collection){
         var options = { };
         collection.insert(model, options, insertCallback);
@@ -46,15 +53,11 @@ var insertOnConnectionOpened = function(collectionName, model, insertCallback){
   return connectionOpened;
 };
 
-
 exports.insert = function(collectionName, model, insertCallback){
-  var db = getDb(function(db){
   var connectionOpened = insertOnConnectionOpened(collectionName, model, insertCallback);
 
-  db.open(connectionOpened);
-  });
+  getDb(connectionOpened);
 };
-
 
 var upsertOnConnectionOpened = function(collectionName, query, model, upsertCallback){
 
@@ -62,6 +65,7 @@ var upsertOnConnectionOpened = function(collectionName, query, model, upsertCall
     if (error) throw error;
 
     db.collection(collectionName, function(err, collection){
+      console.log('upserting', model)
       delete model._id; // weird but true
       collection.findAndModify(query, [], model, {"new":true, upsert:true }, upsertCallback);
     });
@@ -72,20 +76,19 @@ var upsertOnConnectionOpened = function(collectionName, query, model, upsertCall
 };
 
 exports.upsert = function(collectionName, query, model, upsertCallback){
-  getDb(function(db){
-      var connectionOpened = upsertOnConnectionOpened(collectionName, query, model, upsertCallback);
+  var connectionOpened = upsertOnConnectionOpened(collectionName, query, model, upsertCallback);
 
-    db.open(connectionOpened);
-  });
+  getDb(connectionOpened);
 };
-
 
 var queryOnConnectionOpened = function (collectionName, query, projection, queryCallback){
 
   var connectionOpened = function (error, db) {
     if (error) throw error;
+    console.log('db opened callback')
 
     db.collection(collectionName, function(err, collection){
+      console.log('querying', query, projection)
       var options = { };
       collection.find(query, projection).toArray(queryCallback);
     });
@@ -95,30 +98,26 @@ var queryOnConnectionOpened = function (collectionName, query, projection, query
 };
 
 exports.all = function(collectionName, projectionProperties, allCallback) {
-  getDb(function(db){
-    var query = {};
-    var projection = {};
-    for (var i = projectionProperties.length - 1; i >= 0; i--) {
-      projection[projectionProperties[i]] = true;
-    };
-    var connectionOpened = queryOnConnectionOpened(collectionName, query, projection, allCallback);
+  var query = {};
+  var projection = {};
+  for (var i = projectionProperties.length - 1; i >= 0; i--) {
+    projection[projectionProperties[i]] = true;
+  };
+  var connectionOpened = queryOnConnectionOpened(collectionName, query, projection, allCallback);
 
-    db.open(connectionOpened);
-  });
+  getDb(connectionOpened);
 };
 
 exports.one = function(collectionName, query, projectionProperties, oneCallback) {
-  getDb(function(db){
-    var projection = {};
-    for (var i = projectionProperties.length - 1; i >= 0; i--) {
-      projection[projectionProperties[i]] = true;
-    };
-    var connectionOpened = queryOnConnectionOpened(collectionName, query, projection, function(err, data){
-      if (data.length === 0) { oneCallback(err, null); return }
-      oneCallback(err, data[0]);
-    });
-
-    db.open(connectionOpened);
+  var projection = {};
+  for (var i = projectionProperties.length - 1; i >= 0; i--) {
+    projection[projectionProperties[i]] = true;
+  };
+  var connectionOpened = queryOnConnectionOpened(collectionName, query, projection, function(err, data){
+    if (data.length === 0) { oneCallback(err, null); return }
+    oneCallback(err, data[0]);
   });
+
+  getDb(connectionOpened);
 };
 
