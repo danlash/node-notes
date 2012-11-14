@@ -35,3 +35,11 @@ exports.add = function(req, res) {
 		res.send(data);
 	});
 };
+
+exports.deleteAll = function(req, res) {
+	db.deleteCollection('list', function(err, data){
+		if (err) console.log(err);
+		console.log('deleteCollection', data)
+		res.send(data);
+	});
+}

@@ -25,6 +25,8 @@ app.get('/list/:listId', list.detail);
 app.post('/list', list.add);
 app.put('/list/:listId', list.save);
 
+app.delete('/list', list.deleteAll);
+
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Node Notes - port " + app.get('port'));
 });

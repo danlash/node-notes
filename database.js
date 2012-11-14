@@ -121,3 +121,26 @@ exports.one = function(collectionName, query, projectionProperties, oneCallback)
   getDb(connectionOpened);
 };
 
+
+var deleteOnConnectionOpened = function (collectionName, query, deleteCallback){
+
+  var connectionOpened = function (error, db) {
+    if (error) throw error;
+    console.log('db opened callback')
+
+    db.collection(collectionName, function(err, collection){
+      console.log('deleting', query)
+      var options = { };
+      collection.remove(query, options, deleteCallback);
+    });
+  };
+
+  return connectionOpened;
+};
+
+exports.deleteCollection =  function(collectionName, oneCallback) {
+  var query = {}
+  var connectionOpened = deleteOnConnectionOpened(collectionName, query, oneCallback);
+
+  getDb(connectionOpened);
+};

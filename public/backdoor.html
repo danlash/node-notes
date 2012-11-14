@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Node Notes Backdoor</title>
+  </head>
+
+  <body>
+
+    <button id="delete-all">Delete Everything!</button>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script>
+      $(function(){
+        $('#delete-all').click(function(){
+          $.ajax({
+            url: 'list',
+            type: 'delete'
+          });
+        });
+      })
+    </script>
+
+  </body>
+</html>
