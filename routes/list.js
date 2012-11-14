@@ -28,7 +28,12 @@ exports.detail = function(req, res) {
 };
 
 exports.save = function(req, res) {
-	res.send();
+	var listId = parseInt(req.params.listId);
+	console.log('Posted', req.body)
+	db.upsert('list', { id : listId }, req.body, function(err, data) {
+		console.log('Inserted', data);
+		res.send(data);
+	});
 };
 
 exports.add = function(req, res) {

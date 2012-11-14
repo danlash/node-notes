@@ -8,7 +8,7 @@ var getDb = function () {
   var server = new mongodb.Server(serverHost, serverPort, {});
   var db = new mongodb.Db(databaseName, server, { safe : true });
   return db;
-}
+};
 
 var counter = function (db, name, callback) {
   db.collection('counters', function(err, collection){
@@ -17,9 +17,9 @@ var counter = function (db, name, callback) {
       callback(data.next);
     });
   });
-}
+};
 
-var insertOnConnectionOpened = function (collectionName, model, insertCallback){
+var insertOnConnectionOpened = function(collectionName, model, insertCallback){
 
   var connectionOpened = function (error, db) {
     if (error) throw error;
@@ -40,13 +40,35 @@ var insertOnConnectionOpened = function (collectionName, model, insertCallback){
 };
 
 
-exports.insert = function insert(collectionName, model, insertCallback){
+exports.insert = function(collectionName, model, insertCallback){
   var db = getDb();
   var connectionOpened = insertOnConnectionOpened(collectionName, model, insertCallback);
 
   db.open(connectionOpened);
 };
 
+
+var upsertOnConnectionOpened = function(collectionName, query, model, upsertCallback){
+
+  var connectionOpened = function (error, db) {
+    if (error) throw error;
+
+    db.collection(collectionName, function(err, collection){
+      delete model._id; // weird but true
+      collection.findAndModify(query, [], model, {"new":true, upsert:true }, upsertCallback);
+    });
+
+  };
+
+  return connectionOpened;
+};
+
+exports.upsert = function(collectionName, query, model, upsertCallback){
+  var db = getDb();
+  var connectionOpened = upsertOnConnectionOpened(collectionName, query, model, upsertCallback);
+
+  db.open(connectionOpened);
+};
 
 
 var queryOnConnectionOpened = function (collectionName, query, projection, queryCallback){
@@ -88,3 +110,4 @@ exports.one = function(collectionName, query, projectionProperties, oneCallback)
 
   db.open(connectionOpened);
 };
+
