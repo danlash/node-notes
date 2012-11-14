@@ -1,13 +1,20 @@
 var mongodb = require('mongodb');
 
-var serverHost = "127.0.0.1";
-var serverPort = 27017;
-var databaseName = 'NodeNotes';
+var dev = false;
+var serverHost = dev ? "127.0.0.1" : 'alex.mongohq.com';
+var serverPort = dev ? 27017 : 10071;
+var databaseName = dev ? 'NodeNotes' : 'app9222257';
+var user = 'admin';
+var password = 'admin';
 
-var getDb = function () {
+var getDb = function (gotDb) {
   var server = new mongodb.Server(serverHost, serverPort, {});
   var db = new mongodb.Db(databaseName, server, { safe : true });
-  return db;
+  if (dev) {
+    db.authenticate(user, password, function (err, result) {
+      gotDb(result);
+    });
+  } else gotDb(db);
 };
 
 var counter = function (db, name, callback) {
@@ -30,7 +37,7 @@ var insertOnConnectionOpened = function(collectionName, model, insertCallback){
       console.log('Inserting', model);
       db.collection(collectionName, function(err, collection){
         var options = { };
-        collection.insert(model, options, insertCallback);  
+        collection.insert(model, options, insertCallback);
       });
     });
 
@@ -41,10 +48,11 @@ var insertOnConnectionOpened = function(collectionName, model, insertCallback){
 
 
 exports.insert = function(collectionName, model, insertCallback){
-  var db = getDb();
+  var db = getDb(function(db){
   var connectionOpened = insertOnConnectionOpened(collectionName, model, insertCallback);
 
   db.open(connectionOpened);
+  });
 };
 
 
@@ -64,10 +72,11 @@ var upsertOnConnectionOpened = function(collectionName, query, model, upsertCall
 };
 
 exports.upsert = function(collectionName, query, model, upsertCallback){
-  var db = getDb();
-  var connectionOpened = upsertOnConnectionOpened(collectionName, query, model, upsertCallback);
+  getDb(function(db){
+      var connectionOpened = upsertOnConnectionOpened(collectionName, query, model, upsertCallback);
 
-  db.open(connectionOpened);
+    db.open(connectionOpened);
+  });
 };
 
 
@@ -86,28 +95,30 @@ var queryOnConnectionOpened = function (collectionName, query, projection, query
 };
 
 exports.all = function(collectionName, projectionProperties, allCallback) {
-  var db = getDb();
-  var query = {};
-  var projection = {};
-  for (var i = projectionProperties.length - 1; i >= 0; i--) {
-    projection[projectionProperties[i]] = true;
-  };
-  var connectionOpened = queryOnConnectionOpened(collectionName, query, projection, allCallback);
+  getDb(function(db){
+    var query = {};
+    var projection = {};
+    for (var i = projectionProperties.length - 1; i >= 0; i--) {
+      projection[projectionProperties[i]] = true;
+    };
+    var connectionOpened = queryOnConnectionOpened(collectionName, query, projection, allCallback);
 
-  db.open(connectionOpened);
+    db.open(connectionOpened);
+  });
 };
 
 exports.one = function(collectionName, query, projectionProperties, oneCallback) {
-  var db = getDb();
-  var projection = {};
-  for (var i = projectionProperties.length - 1; i >= 0; i--) {
-    projection[projectionProperties[i]] = true;
-  };
-  var connectionOpened = queryOnConnectionOpened(collectionName, query, projection, function(err, data){
-    if (data.length === 0) { oneCallback(err, null); return }
-    oneCallback(err, data[0]);
-  });
+  getDb(function(db){
+    var projection = {};
+    for (var i = projectionProperties.length - 1; i >= 0; i--) {
+      projection[projectionProperties[i]] = true;
+    };
+    var connectionOpened = queryOnConnectionOpened(collectionName, query, projection, function(err, data){
+      if (data.length === 0) { oneCallback(err, null); return }
+      oneCallback(err, data[0]);
+    });
 
-  db.open(connectionOpened);
+    db.open(connectionOpened);
+  });
 };
 
