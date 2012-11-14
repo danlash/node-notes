@@ -1,4 +1,5 @@
-var db = require('../database');
+var db = require('../database')
+  , sanitize = require('validator').sanitize
 
 exports.index = function(req, res) {
 	db.all('list', ['id', 'name'], function(err, data) {
@@ -29,7 +30,10 @@ exports.save = function(req, res) {
 
 exports.add = function(req, res) {
 	var name = req.body.name;
-	db.insert('list', { name : name }, function(err, data){
+	var doc = { name : sanitize(name).xss() };
+	console.log('sanitized', doc)
+
+	db.insert('list', doc, function(err, data){
 		if (err) console.log(err);
 		console.log('add', data)
 		res.send(data);
